@@ -1,0 +1,28 @@
+version: '3.4'
+
+networks:
+    webapiplaces:
+
+services:
+  placesdb:
+    container_name: places-sql-server
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+        - 8002:1433
+    enviroment: 
+        - ACCEPT_EULA=Y
+        - MSSQL_SA_PASSWORD=<YourStrong@Passw0rd>
+    # networks:
+    #     - webapiplaces
+  webapiplaces:
+    container_name: web-api-places
+    image: ${DOCKER_REGISTRY-}webapiplaces
+    build:
+      context: .
+      dockerfile: WebApiPlaces\Dockerfile
+    ports:
+        - 8001:8080
+    depends_on:
+        - placesdb
+    networks:
+        - webapiplaces
